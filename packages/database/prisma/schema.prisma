@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── FOYDALANUVCHILAR ──
+model User {
+  id           String   @id @default(uuid())
+  phone        String   @unique
+  passwordHash String
+  role         Role     @default(BUYER)
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  lastLogin    DateTime?
+
+  kyc          KycVerification?
+  seller       Seller?
+  buyerTxs     Transaction[]    @relation("BuyerTransactions")
+  auditLogs    AuditLog[]
+}
+
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+  SUPERADMIN
+}
+
+// ── KYC TEKSHIRUV ──
+model KycVerification {
+  id           String      @id @default(uuid())
+  userId       String      @unique
+  user         User        @relation(fields: [userId], references: [id])
+  passportHash String
+  status       KycStatus   @default(PENDING)
+  myidRef      String?
+  verifiedAt   DateTime?
+  createdAt    DateTime    @default(now())
+}
+
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ── SOTUVCHILAR ──
+model Seller {
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id])
+  shopName  String
+  licenseNo String       @unique
+  status    SellerStatus @default(PENDING)
+  rating    Decimal      @default(0)
+  createdAt DateTime     @default(now())
+
+  products  Product[]
+  sellerTxs Transaction[] @relation("SellerTransactions")
+}
+
+enum SellerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+// ── MAHSULOTLAR ──
+model Product {
+  id          String        @id @default(uuid())
+  sellerId    String
+  seller      Seller        @relation(fields: [sellerId], references: [id])
+  title       String
+  metalType   MetalType
+  weightGram  Decimal
+  purity      String
+  priceUzs    BigInt
+  imageUrl    String?
+  status      ProductStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+
+  transactions Transaction[]
+}
+
+enum MetalType {
+  GOLD
+  SILVER
+}
+
+enum ProductStatus {
+  ACTIVE
+  SOLD
+  REMOVED
+}
+
+// ── TRANZAKSIYALAR ──
+model Transaction {
+  id        String          @id @default(uuid())
+  buyerId   String
+  buyer     User            @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    Seller          @relation("SellerTransactions", fields: [sellerId], references: [id])
+  productId String
+  product   Product         @relation(fields: [productId], references: [id])
+  amountUzs BigInt
+  status    TxStatus        @default(PENDING)
+  txHash    String          @unique
+  signedAt  DateTime?
+  createdAt DateTime        @default(now())
+
+  delivery  Delivery?
+}
+
+enum TxStatus {
+  PENDING
+  PAID
+  DELIVERED
+  COMPLETED
+  DISPUTED
+  REFUNDED
+}
+
+// ── YETKAZIB BERISH ──
+model Delivery {
+  id            String       @id @default(uuid())
+  transactionId String       @unique
+  transaction   Transaction  @relation(fields: [transactionId], references: [id])
+  courier       String
+  trackingNo    String?
+  status        DeliveryStatus @default(PENDING)
+  deliveredAt   DateTime?
+  createdAt     DateTime     @default(now())
+}
+
+enum DeliveryStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+// ── AUDIT LOG (o'zgarmas) ──
+model AuditLog {
+  id        String   @id @default(uuid())
+  entity    String
+  entityId  String
+  action    String
+  actorId   String
+  actor     User     @relation(fields: [actorId], references: [id])
+  payload   Json
+  createdAt DateTime @default(now())
+}
