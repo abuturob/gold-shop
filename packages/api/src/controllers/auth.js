@@ -1,3 +1,10 @@
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const path = require('path')
+const dotenv = require('dotenv')
+
+dotenv.config({ path: path.join(__dirname, '../.env') })
+
 const { PrismaClient } = require('../../../database/node_modules/@prisma/client')
 
 const prisma = new PrismaClient({
@@ -8,29 +15,24 @@ const prisma = new PrismaClient({
   }
 })
 
-// Ro'yxatdan o'tish
 const register = async (req, res) => {
   try {
     const { phone, password, role } = req.body
 
-    // Telefon raqam tekshiruvi
     if (!phone || !password) {
       return res.status(400).json({ error: 'Telefon va parol kiritish shart' })
     }
 
-    // Foydalanuvchi mavjudmi?
     const existingUser = await prisma.user.findUnique({
       where: { phone }
     })
 
     if (existingUser) {
-      return res.status(400).json({ error: 'Bu telefon raqam allaqachon ro\'yxatdan o\'tgan' })
+      return res.status(400).json({ error: 'Bu telefon raqam allaqachon royxatdan otgan' })
     }
 
-    // Parolni shifrlash
     const passwordHash = await bcrypt.hash(password, 10)
 
-    // Foydalanuvchi yaratish
     const user = await prisma.user.create({
       data: {
         phone,
@@ -39,7 +41,6 @@ const register = async (req, res) => {
       }
     })
 
-    // Token yaratish
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
@@ -47,7 +48,7 @@ const register = async (req, res) => {
     )
 
     res.status(201).json({
-      message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz',
+      message: 'Muvaffaqiyatli royxatdan otdingiz',
       token,
       user: {
         id: user.id,
@@ -62,28 +63,24 @@ const register = async (req, res) => {
   }
 }
 
-// Kirish
 const login = async (req, res) => {
   try {
     const { phone, password } = req.body
 
-    // Foydalanuvchini qidirish
     const user = await prisma.user.findUnique({
       where: { phone }
     })
 
     if (!user) {
-      return res.status(401).json({ error: 'Telefon yoki parol noto\'g\'ri' })
+      return res.status(401).json({ error: 'Telefon yoki parol notogri' })
     }
 
-    // Parolni tekshirish
     const isValid = await bcrypt.compare(password, user.passwordHash)
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Telefon yoki parol noto\'g\'ri' })
+      return res.status(401).json({ error: 'Telefon yoki parol notogri' })
     }
 
-    // Token yaratish
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
