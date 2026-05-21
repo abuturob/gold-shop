@@ -1,12 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { becomeSeller, getSellers } = require('../controllers/sellers')
+const { becomeSeller, getSellers, approveSeller } = require('../controllers/sellers')
 const { authenticate, authorize } = require('../middleware/auth')
 
-// Sotuvchi bo'lish
 router.post('/become-seller', authenticate, becomeSeller)
-
-// Barcha sotuvchilar (faqat admin)
 router.get('/', authenticate, authorize('ADMIN', 'SUPERADMIN'), getSellers)
+router.patch('/:id/approve', authenticate, authorize('ADMIN', 'SUPERADMIN'), approveSeller)
 
 module.exports = router

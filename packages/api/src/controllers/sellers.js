@@ -13,7 +13,6 @@ const prisma = new PrismaClient({
   }
 })
 
-// Sotuvchi bo'lish uchun ariza
 const becomeSeller = async (req, res) => {
   try {
     const { shopName, licenseNo } = req.body
@@ -22,7 +21,6 @@ const becomeSeller = async (req, res) => {
       return res.status(400).json({ error: 'Do\'kon nomi va litsenziya raqami shart' })
     }
 
-    // Allaqachon sotuvchimi?
     const existingSeller = await prisma.seller.findUnique({
       where: { userId: req.user.userId }
     })
@@ -40,7 +38,6 @@ const becomeSeller = async (req, res) => {
       }
     })
 
-    // Foydalanuvchi rolini SELLER ga o'zgartirish
     await prisma.user.update({
       where: { id: req.user.userId },
       data: { role: 'SELLER' }
@@ -62,7 +59,6 @@ const becomeSeller = async (req, res) => {
   }
 }
 
-// Sotuvchilar ro'yxati (admin uchun)
 const getSellers = async (req, res) => {
   try {
     const sellers = await prisma.seller.findMany({
@@ -83,4 +79,23 @@ const getSellers = async (req, res) => {
   }
 }
 
-module.exports = { becomeSeller, getSellers }
+const approveSeller = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const seller = await prisma.seller.update({
+      where: { id },
+      data: { status: 'ACTIVE' }
+    })
+
+    res.json({
+      message: 'Sotuvchi tasdiqlandi',
+      seller
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Server xatosi' })
+  }
+}
+
+module.exports = { becomeSeller, getSellers, approveSeller }
