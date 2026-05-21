@@ -7,7 +7,7 @@ export default function Home() {
       <header style={{background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)', borderBottom: '1px solid #D4AF37'}}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <span style={{fontSize: '2rem'}}>👑</span>
+            <img src="/logo.png" style={{width: '120px', height: '120px', objectFit: 'contain'}} alt="logo" />
             <div>
               <h1 style={{color: '#D4AF37', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '2px'}}>GOLD SHOP</h1>
               <p style={{color: '#888', fontSize: '0.7rem', letterSpacing: '3px'}}>PREMIUM MARKETPLACE</p>
@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer style={{background: '#111', borderTop: '1px solid #222', padding: '40px 24px', textAlign: 'center'}}>
-        <p style={{color: '#D4AF37', fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>👑 GOLD SHOP</p>
+        <p style={{color: '#D4AF37', fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}><img src="/logo.png" style={{width: '50px', height: '50px', objectFit: 'contain'}} alt="Gold Shop Logo" /> GOLD SHOP</p>
         <p style={{color: '#444', fontSize: '0.85rem'}}>© 2026 Gold Shop. Barcha huquqlar himoyalangan.</p>
       </footer>
     </main>
