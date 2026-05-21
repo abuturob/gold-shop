@@ -13,7 +13,7 @@ export default function Admin() {
       return
     }
 
-    fetch('http://localhost:3000/api/sellers', {
+    fetch('http://localhost:5000/api/sellers', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -26,7 +26,7 @@ export default function Admin() {
 
   const approveSeller = async (sellerId) => {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/api/sellers/${sellerId}/approve`, {
+    const res = await fetch(`http://localhost:5000/api/sellers/${sellerId}/approve`, {
       method: 'PATCH',
       headers: { 'Authorization': `Bearer ${token}` }
     })
