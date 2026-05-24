@@ -98,4 +98,63 @@ const approveSeller = async (req, res) => {
   }
 }
 
-module.exports = { becomeSeller, getSellers, approveSeller }
+const getMyProducts = async (req, res) => {
+  try {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: req.user.userId }
+    })
+    if (!seller) {
+      return res.status(404).json({ error: 'Sotuvchi topilmadi' })
+    }
+    const products = await prisma.product.findMany({
+      where: { sellerId: seller.id },
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json({
+      products: products.map(p => ({
+        ...p,
+        priceUzs: p.priceUzs.toString()
+      }))
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Server xatosi' })
+  }
+}
+
+const getMyStats = async (req, res) => {
+  try {
+    const seller = await prisma.seller.findUnique({
+      where: { userId: req.user.userId }
+    })
+    if (!seller) {
+      return res.status(404).json({ error: 'Sotuvchi topilmadi' })
+    }
+    const products = await prisma.product.findMany({
+      where: { sellerId: seller.id }
+    })
+    const totalProducts = products.length
+    const activeProducts = products.filter(p => p.status === 'ACTIVE').length
+    const totalValue = products.reduce((sum, p) => sum + Number(p.priceUzs), 0)
+
+    res.json({
+      seller: {
+        id: seller.id,
+        shopName: seller.shopName,
+        licenseNo: seller.licenseNo,
+        status: seller.status,
+        rating: seller.rating
+      },
+      stats: {
+        totalProducts,
+        activeProducts,
+        totalValue: totalValue.toString()
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Server xatosi' })
+  }
+}
+
+module.exports = { becomeSeller, getSellers, approveSeller, getMyProducts, getMyStats }
