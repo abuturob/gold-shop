@@ -17,7 +17,7 @@ const prisma = new PrismaClient({
 const getProducts = async (req, res) => {
   try {
     const products = await prisma.product.findMany({
-      where: { status: 'ACTIVE' },
+      where: {},
       include: {
         seller: {
           select: {
@@ -27,7 +27,12 @@ const getProducts = async (req, res) => {
         }
       }
     })
-    res.json({ products })
+    res.json({ 
+  products: products.map(p => ({
+    ...p,
+    priceUzs: p.priceUzs.toString()
+  }))
+})
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Server xatosi' })

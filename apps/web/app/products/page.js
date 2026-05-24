@@ -4,86 +4,210 @@ import { useState, useEffect } from 'react'
 export default function Products() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState('ALL')
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     fetch('http://localhost:5000/api/products')
       .then(res => res.json())
-      .then(data => {
-        setProducts(data.products)
-        setLoading(false)
-      })
+      .then(data => { setProducts(data.products || []); setLoading(false) })
       .catch(() => setLoading(false))
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  return (
-    <main style={{background: '#0a0a0a', minHeight: '100vh'}}>
-      {/* Header */}
-      <header style={{background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)', borderBottom: '1px solid #D4AF37'}}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <a href="/" className="flex items-center gap-3" style={{textDecoration: 'none'}}>
-            <img src="/logo.png" style={{width: '45px', height: '45px', objectFit: 'contain'}} alt="logo" />
-            <div>
-              <h1 style={{color: '#D4AF37', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '2px'}}>GOLD SHOP</h1>
-              <p style={{color: '#888', fontSize: '0.7rem', letterSpacing: '3px'}}>PREMIUM MARKETPLACE</p>
-            </div>
-          </a>
-          <nav className="flex items-center gap-6">
-            <a href="/products" style={{color: '#D4AF37', textDecoration: 'none', fontSize: '0.9rem', borderBottom: '1px solid #D4AF37', paddingBottom: '2px'}}>Mahsulotlar</a>
-            <a href="/sellers" style={{color: '#ccc', textDecoration: 'none', fontSize: '0.9rem'}}>Sotuvchilar</a>
-            <a href="/login" style={{color: '#D4AF37', border: '1px solid #D4AF37', padding: '8px 20px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.9rem'}}>Kirish</a>
-          </nav>
-        </div>
-      </header>
+  const filtered = filter === 'ALL' ? products : products.filter(p => p.metalType === filter)
 
-      {/* Page Title */}
-      <section style={{padding: '60px 24px 40px', textAlign: 'center'}}>
-        <p style={{color: '#D4AF37', letterSpacing: '4px', fontSize: '0.8rem', marginBottom: '12px'}}>KATALOG</p>
-        <h2 style={{color: '#fff', fontSize: '2.5rem', fontWeight: '800', marginBottom: '16px'}}>Oltin Mahsulotlar</h2>
-        <p style={{color: '#666', fontSize: '1rem'}}>Sertifikatlangan sotuvchilardan premium oltin va zargarlik buyumlari</p>
+  return (
+    <main style={{background: '#080808', minHeight: '100vh', fontFamily: 'Georgia, serif'}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .nav-link { color: #999; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s; }
+        .nav-link:hover { color: #C9A84C; }
+        .nav-link.active { color: #C9A84C; border-bottom: 1px solid #C9A84C; padding-bottom: 2px; }
+        .product-card { background: #0f0f0f; border: 1px solid #1a1a1a; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
+        .product-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(201,168,76,0.03), transparent); opacity: 0; transition: opacity 0.4s; }
+        .product-card:hover { border-color: #2a2200; transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .product-card:hover::before { opacity: 1; }
+        .filter-btn { background: none; border: 1px solid #1a1a1a; color: #555; padding: 10px 28px; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+        .filter-btn:hover { border-color: #C9A84C; color: #C9A84C; }
+        .filter-btn.active { border-color: #C9A84C; color: #C9A84C; background: rgba(201,168,76,0.05); }
+        .buy-btn { background: linear-gradient(135deg, #A07830, #C9A84C); color: #000; border: none; padding: 12px 24px; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .buy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      `}</style>
+
+      {/* NAV */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        padding: '0 60px', height: '80px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: scrolled ? 'rgba(8,8,8,0.95)' : 'rgba(8,8,8,0.8)',
+        borderBottom: '1px solid #111',
+        backdropFilter: 'blur(20px)',
+        transition: 'all 0.4s'
+      }}>
+        <a href="/" style={{textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px'}}>
+          <img src="/logo.png" style={{width: '44px', height: '44px', objectFit: 'contain'}} alt="logo" />
+          <div>
+            <div style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1.1rem', fontWeight: '600', letterSpacing: '4px'}}>GOLD SHOP</div>
+            <div style={{fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.55rem', letterSpacing: '3px'}}>PREMIUM MARKETPLACE</div>
+          </div>
+        </a>
+        <div style={{display: 'flex', gap: '48px', alignItems: 'center'}}>
+          <a href="/products" className="nav-link active">Mahsulotlar</a>
+          <a href="/sellers" className="nav-link">Sotuvchilar</a>
+          <a href="/login" className="nav-link">Kirish</a>
+          <a href="/register" style={{
+            background: 'linear-gradient(135deg, #A07830, #C9A84C)',
+            color: '#000', padding: '10px 28px',
+            fontFamily: 'Montserrat, sans-serif', fontSize: '0.7rem',
+            fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase',
+            textDecoration: 'none', transition: 'all 0.3s'
+          }}>Boshlash</a>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section style={{
+        paddingTop: '160px', paddingBottom: '80px',
+        paddingLeft: '60px', paddingRight: '60px',
+        borderBottom: '1px solid #111',
+        position: 'relative', overflow: 'hidden'
+      }}>
+        <div style={{
+          position: 'absolute', top: '-100px', right: '-100px',
+          width: '600px', height: '600px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
+        <div style={{maxWidth: '1200px', margin: '0 auto'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px'}}>
+            <div style={{width: '60px', height: '1px', background: 'linear-gradient(90deg, #C9A84C, transparent)'}} />
+            <span style={{fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.65rem', letterSpacing: '4px', textTransform: 'uppercase'}}>Katalog</span>
+          </div>
+          <h1 style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '4rem', fontWeight: '300', marginBottom: '16px'}}>
+            Oltin <em style={{fontStyle: 'italic', color: '#C9A84C'}}>Mahsulotlar</em>
+          </h1>
+          <p style={{fontFamily: 'Montserrat, sans-serif', color: '#555', fontSize: '0.85rem', fontWeight: '300', lineHeight: '1.8', maxWidth: '500px'}}>
+            Sertifikatlangan sotuvchilardan premium oltin va zargarlik buyumlari. Har bir mahsulot autentifikatsiya qilingan.
+          </p>
+        </div>
       </section>
 
-      {/* Products Grid */}
-      <section style={{padding: '0 24px 80px'}}>
-        <div className="max-w-7xl mx-auto">
+      {/* FILTERS */}
+      <section style={{padding: '40px 60px', borderBottom: '1px solid #111', marginTop: '80px'}}>
+        <div style={{maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '12px', alignItems: 'center'}}>
+          <span style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.7rem', letterSpacing: '2px', marginRight: '8px'}}>FILTER:</span>
+          {[
+            {val: 'ALL', label: 'Barchasi'},
+            {val: 'GOLD', label: 'Oltin'},
+            {val: 'SILVER', label: 'Kumush'},
+            {val: 'PLATINUM', label: 'Platina'},
+          ].map(f => (
+            <button key={f.val} className={`filter-btn ${filter === f.val ? 'active' : ''}`}
+              onClick={() => setFilter(f.val)}>{f.label}</button>
+          ))}
+          <div style={{marginLeft: 'auto', fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.75rem'}}>
+            {filtered.length} ta mahsulot
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCTS */}
+      <section style={{padding: '60px', minHeight: '60vh'}}>
+        <div style={{maxWidth: '1200px', margin: '0 auto'}}>
           {loading ? (
-            <div style={{textAlign: 'center', padding: '80px', color: '#D4AF37', fontSize: '1.2rem'}}>
-              Yuklanmoqda...
+            <div style={{textAlign: 'center', padding: '120px 0'}}>
+              <div style={{fontFamily: 'Cormorant Garamond, serif', color: '#C9A84C', fontSize: '3rem', fontWeight: '300', opacity: 0.4}}>♦</div>
+              <p style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.8rem', letterSpacing: '2px', marginTop: '16px'}}>YUKLANMOQDA...</p>
             </div>
-          ) : products.length === 0 ? (
-            <div style={{textAlign: 'center', padding: '80px'}}>
-              <div style={{fontSize: '4rem', marginBottom: '24px'}}>💎</div>
-              <p style={{color: '#666', fontSize: '1.2rem', marginBottom: '8px'}}>Hozircha mahsulotlar yo'q</p>
-              <p style={{color: '#444', fontSize: '0.9rem'}}>Sotuvchilar tez orada mahsulot qo'shishadi</p>
+          ) : filtered.length === 0 ? (
+            <div style={{textAlign: 'center', padding: '120px 0'}}>
+              <div style={{fontFamily: 'Cormorant Garamond, serif', color: '#C9A84C', fontSize: '5rem', fontWeight: '300', opacity: 0.2}}>♦</div>
+              <h3 style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '2rem', fontWeight: '300', marginTop: '24px'}}>Mahsulotlar yo'q</h3>
+              <p style={{fontFamily: 'Montserrat, sans-serif', color: '#444', fontSize: '0.8rem', marginTop: '12px'}}>Sotuvchilar tez orada mahsulot qo'shishadi</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-8">
-              {products.map((product) => (
-                <div key={product.id} style={{background: '#111', border: '1px solid #222', borderRadius: '12px', overflow: 'hidden'}}>
-                  <div style={{background: 'linear-gradient(135deg, #1a1500, #2d2400)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem'}}>
-                    {product.metalType === 'GOLD' ? '🥇' : '🥈'}
-                  </div>
-                  <div style={{padding: '24px'}}>
-                    <div className="flex justify-between items-start" style={{marginBottom: '12px'}}>
-                      <h3 style={{color: '#fff', fontSize: '1.1rem', fontWeight: '700'}}>{product.title}</h3>
-                      <span style={{background: '#1a1500', color: '#D4AF37', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '600'}}>
-                        {product.metalType === 'GOLD' ? 'OLTIN' : 'KUMUSH'}
-                      </span>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#111'}}>
+              {filtered.map((product) => (
+                <div key={product.id} className="product-card">
+                  {/* Image area */}
+                  <div style={{
+                    height: '280px',
+                    background: 'radial-gradient(ellipse at center, #1e1800 0%, #0f0d08 70%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative', overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      fontSize: '5rem',
+                      filter: 'drop-shadow(0 0 30px rgba(201,168,76,0.4))',
+                      transition: 'transform 0.4s'
+                    }}>
+                      {product.metalType === 'GOLD' ? '💍' : product.metalType === 'SILVER' ? '🥈' : '💎'}
                     </div>
-                    <div style={{marginBottom: '16px'}}>
-                      <p style={{color: '#666', fontSize: '0.85rem', marginBottom: '4px'}}>Og'irlik: <span style={{color: '#ccc'}}>{product.weightGram}g</span></p>
-                      <p style={{color: '#666', fontSize: '0.85rem', marginBottom: '4px'}}>Sifat: <span style={{color: '#ccc'}}>{product.purity}</span></p>
+                    <div style={{
+                      position: 'absolute', top: '16px', right: '16px',
+                      background: 'rgba(201,168,76,0.1)',
+                      border: '1px solid rgba(201,168,76,0.2)',
+                      color: '#C9A84C',
+                      padding: '4px 12px',
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontSize: '0.6rem', fontWeight: '700', letterSpacing: '2px'
+                    }}>
+                      {product.metalType === 'GOLD' ? 'OLTIN' : product.metalType === 'SILVER' ? 'KUMUSH' : 'PLATINA'}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div style={{padding: '28px'}}>
+                    <h3 style={{
+                      fontFamily: 'Cormorant Garamond, serif',
+                      color: '#F5F0E8', fontSize: '1.4rem',
+                      fontWeight: '400', marginBottom: '12px'
+                    }}>{product.title}</h3>
+
+                    <div style={{display: 'flex', gap: '16px', marginBottom: '20px'}}>
+                      <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        color: '#444', fontSize: '0.7rem', letterSpacing: '1px'
+                      }}>
+                        <span style={{color: '#333', display: 'block', marginBottom: '2px'}}>OG'IRLIK</span>
+                        <span style={{color: '#888'}}>{product.weightGram}g</span>
+                      </div>
+                      <div style={{width: '1px', background: '#1a1a1a'}} />
+                      <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        color: '#444', fontSize: '0.7rem', letterSpacing: '1px'
+                      }}>
+                        <span style={{color: '#333', display: 'block', marginBottom: '2px'}}>PROBA</span>
+                        <span style={{color: '#888'}}>{product.purity}</span>
+                      </div>
                       {product.seller && (
-                        <p style={{color: '#666', fontSize: '0.85rem'}}>Sotuvchi: <span style={{color: '#ccc'}}>{product.seller.shopName}</span></p>
+                        <>
+                          <div style={{width: '1px', background: '#1a1a1a'}} />
+                          <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            color: '#444', fontSize: '0.7rem', letterSpacing: '1px'
+                          }}>
+                            <span style={{color: '#333', display: 'block', marginBottom: '2px'}}>SOTUVCHI</span>
+                            <span style={{color: '#888'}}>{product.seller.shopName}</span>
+                          </div>
+                        </>
                       )}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <p style={{color: '#D4AF37', fontSize: '1.3rem', fontWeight: '800'}}>
-                        {Number(product.priceUzs).toLocaleString()} so'm
-                      </p>
-                      <button style={{background: 'linear-gradient(135deg, #D4AF37, #FFD700)', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '6px', fontWeight: '700', cursor: 'pointer', fontSize: '0.9rem'}}>
-                        Xarid qilish
-                      </button>
+
+                    <div style={{borderTop: '1px solid #1a1a1a', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+                      <div>
+                        <div style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.6rem', letterSpacing: '1px', marginBottom: '4px'}}>NARX</div>
+                        <div style={{fontFamily: 'Cormorant Garamond, serif', color: '#C9A84C', fontSize: '1.6rem', fontWeight: '400'}}>
+                          {Number(product.priceUzs).toLocaleString()} <span style={{fontSize: '0.9rem', color: '#888'}}>so'm</span>
+                        </div>
+                      </div>
                     </div>
+
+                    <button className="buy-btn">Xarid Qilish</button>
                   </div>
                 </div>
               ))}
@@ -92,10 +216,15 @@ export default function Products() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{background: '#111', borderTop: '1px solid #222', padding: '40px 24px', textAlign: 'center'}}>
-        <p style={{color: '#D4AF37', fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px'}}>👑 GOLD SHOP</p>
-        <p style={{color: '#444', fontSize: '0.85rem'}}>© 2026 Gold Shop. Barcha huquqlar himoyalangan.</p>
+      {/* FOOTER */}
+      <footer style={{background: '#080808', padding: '60px', borderTop: '1px solid #111'}}>
+        <div style={{maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <img src="/logo.png" style={{width: '32px', height: '32px', objectFit: 'contain'}} alt="logo" />
+            <span style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1rem', letterSpacing: '3px'}}>GOLD SHOP</span>
+          </div>
+          <p style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.75rem'}}>© 2026 Gold Shop. Barcha huquqlar himoyalangan.</p>
+        </div>
       </footer>
     </main>
   )

@@ -7,21 +7,19 @@ export default function Register() {
   const [role, setRole] = useState('BUYER')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [focused, setFocused] = useState('')
 
   const handleRegister = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-
     try {
       const res = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password, role })
       })
-
       const data = await res.json()
-
       if (!res.ok) {
         setError(data.error)
       } else {
@@ -37,102 +35,213 @@ export default function Register() {
   }
 
   return (
-    <main style={{background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <div style={{background: '#111', border: '1px solid #D4AF37', borderRadius: '12px', padding: '48px', width: '100%', maxWidth: '400px'}}>
-        <div>
-  <img 
-    src="/logo.png" 
-    style={{
-      width: '180px', 
-      height: '120px', 
-      objectFit: 'contain',
-      display: 'block',        // Block qilib qo'yamiz
-      margin: '0 auto 15px'    // Tepa-past 0, chap-o'ng auto = markaz, pastdan 15px joy
-    }} 
-    alt="Gold Shop Logo" 
-  />
-  
-  <h1 style={{
-    color: '#D4AF37', 
-    fontSize: '1.5rem', 
-    fontWeight: '800', 
-    letterSpacing: '2px',
-    textAlign: 'center',      // Matnni ham markazga
-    margin: '0 0 5px 0'
-  }}>
-    GOLD SHOP
-  </h1>
-  
-  <p style={{
-    color: '#666', 
-    fontSize: '0.9rem',
-    textAlign: 'center',
-    margin: 0
-  }}>
-    Yangi hisob yarating
-  </p>
-</div>
-        {error && (
-          <div style={{background: '#2d1a1a', border: '1px solid #ff4444', borderRadius: '8px', padding: '12px', marginBottom: '20px', color: '#ff6666', fontSize: '0.9rem'}}>
-            {error}
-          </div>
-        )}
+    <main style={{background: '#080808', minHeight: '100vh', display: 'flex', fontFamily: 'Georgia, serif'}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .input-field {
+          width: 100%;
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid #222;
+          padding: 12px 0;
+          color: #F5F0E8;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 0.9rem;
+          font-weight: 300;
+          outline: none;
+          transition: border-color 0.3s;
+          color-scheme: dark;
+        }
+        .input-field::placeholder { color: #333; }
+        .input-field:focus { border-bottom-color: #C9A84C; }
+        .register-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #A07830, #C9A84C, #E8C96A);
+          color: #000;
+          border: none;
+          padding: 16px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all 0.3s;
+          margin-top: 40px;
+        }
+        .register-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .register-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .role-btn {
+          flex: 1;
+          padding: 20px 12px;
+          border: 1px solid #1a1a1a;
+          background: transparent;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+        .role-btn.active {
+          border-color: #C9A84C;
+          background: rgba(201,168,76,0.05);
+        }
+        .role-btn:hover { border-color: #2a2a2a; }
+      `}</style>
 
-        <form onSubmit={handleRegister}>
-          <div style={{marginBottom: '20px'}}>
-            <label style={{color: '#888', fontSize: '0.85rem', display: 'block', marginBottom: '8px'}}>Telefon raqam</label>
-            <input
-              type="text"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              placeholder="+998901234567"
-              style={{width: '100%', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '1rem', outline: 'none', boxSizing: 'border-box'}}
-            />
+      {/* LEFT - Decorative */}
+      <div style={{
+        width: '50%', position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0a0800 0%, #1a1500 50%, #0a0800 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'radial-gradient(ellipse at 40% 50%, rgba(201,168,76,0.08) 0%, transparent 60%)'
+        }} />
+        <div style={{position: 'absolute', top: '10%', left: '10%', width: '200px', height: '200px', border: '1px solid #1a1500', borderRadius: '50%'}} />
+        <div style={{position: 'absolute', bottom: '15%', right: '8%', width: '300px', height: '300px', border: '1px solid #1a1500', borderRadius: '50%'}} />
+        <div style={{position: 'absolute', top: '40%', left: '20%', width: '100px', height: '100px', border: '1px solid #2a2000', transform: 'rotate(45deg)'}} />
+
+        <div style={{position: 'relative', zIndex: 1, textAlign: 'center', padding: '60px'}}>
+          <img src="/logo.png" style={{
+            width: '250px', height: '100px', objectFit: 'contain',
+            display: 'block', margin: '0 auto 20px',
+            filter: 'drop-shadow(0 0 30px rgba(201,168,76,0.4))'
+          }} alt="logo" />
+
+          <h1 style={{
+            fontFamily: 'Cormorant Garamond, serif',
+            color: '#F5F0E8', fontSize: '3.5rem',
+            fontWeight: '300', lineHeight: '1.1', marginBottom: '24px'
+          }}>
+            Platforma<br/>
+            <em style={{color: '#C9A84C', fontStyle: 'italic'}}>Imkoniyatlari</em>
+          </h1>
+
+          <div style={{width: '60px', height: '1px', background: 'linear-gradient(90deg, transparent, #C9A84C, transparent)', margin: '0 auto 32px'}} />
+
+          <div style={{display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left'}}>
+            {[
+              {icon: '💍', title: 'Xaridor', desc: "Premium oltin mahsulotlarni xavfsiz xarid qiling"},
+              {icon: '🏪', title: 'Sotuvchi', desc: "O'z mahsulotlaringizni minglab xaridorlarga yeting"},
+              {icon: '🔐', title: 'Xavfsizlik', desc: "Har bir tranzaksiya davlat nazoratida"},
+            ].map((item, i) => (
+              <div key={i} style={{display: 'flex', gap: '16px', alignItems: 'flex-start'}}>
+                <div style={{
+                  width: '40px', height: '40px', flexShrink: 0,
+                  background: 'rgba(201,168,76,0.05)',
+                  border: '1px solid rgba(201,168,76,0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '1.1rem'
+                }}>{item.icon}</div>
+                <div>
+                  <div style={{fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.7rem', fontWeight: '600', letterSpacing: '1px', marginBottom: '4px'}}>{item.title}</div>
+                  <div style={{fontFamily: 'Montserrat, sans-serif', color: '#444', fontSize: '0.75rem', lineHeight: '1.6', fontWeight: '300'}}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT - Form */}
+      <div style={{
+        width: '50%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '60px', background: '#080808', borderLeft: '1px solid #111'
+      }}>
+        <div style={{width: '100%', maxWidth: '420px'}}>
+
+          <a href="/" style={{display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', marginBottom: '60px'}}>
+            <span style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.7rem', letterSpacing: '2px'}}>← BOSH SAHIFA</span>
+          </a>
+
+          <div style={{marginBottom: '40px'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+              <div style={{width: '40px', height: '1px', background: 'linear-gradient(90deg, #C9A84C, transparent)'}} />
+              <span style={{fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.6rem', letterSpacing: '3px'}}>RO'YXATDAN O'TISH</span>
+            </div>
+            <h2 style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '2.5rem', fontWeight: '300', lineHeight: '1.1'}}>
+              Hisob<br/>
+              <em style={{fontStyle: 'italic', color: '#C9A84C'}}>Yarating</em>
+            </h2>
           </div>
 
-          <div style={{marginBottom: '20px'}}>
-            <label style={{color: '#888', fontSize: '0.85rem', display: 'block', marginBottom: '8px'}}>Parol</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{width: '100%', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '1rem', outline: 'none', boxSizing: 'border-box'}}
-            />
-          </div>
-
-          <div style={{marginBottom: '32px'}}>
-            <label style={{color: '#888', fontSize: '0.85rem', display: 'block', marginBottom: '8px'}}>Men kim sifatida ro'yxatdan o'taman?</label>
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setRole('BUYER')}
-                style={{flex: 1, padding: '12px', borderRadius: '8px', border: role === 'BUYER' ? '2px solid #D4AF37' : '1px solid #333', background: role === 'BUYER' ? '#1a1500' : '#1a1a1a', color: role === 'BUYER' ? '#D4AF37' : '#666', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}
-              >
-                🛒 Xaridor
+          {/* Role selection */}
+          <div style={{marginBottom: '40px'}}>
+            <label style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '16px'}}>
+              Hisobing turi
+            </label>
+            <div style={{display: 'flex', gap: '12px'}}>
+              <button type="button" className={`role-btn ${role === 'BUYER' ? 'active' : ''}`} onClick={() => setRole('BUYER')}>
+                <span style={{fontSize: '1.5rem'}}>🛒</span>
+                <span style={{fontFamily: 'Montserrat, sans-serif', color: role === 'BUYER' ? '#C9A84C' : '#444', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px'}}>XARIDOR</span>
+                <span style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.65rem', fontWeight: '300'}}>Mahsulot xarid qilish</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setRole('SELLER')}
-                style={{flex: 1, padding: '12px', borderRadius: '8px', border: role === 'SELLER' ? '2px solid #D4AF37' : '1px solid #333', background: role === 'SELLER' ? '#1a1500' : '#1a1a1a', color: role === 'SELLER' ? '#D4AF37' : '#666', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'}}
-              >
-                🏪 Sotuvchi
+              <button type="button" className={`role-btn ${role === 'SELLER' ? 'active' : ''}`} onClick={() => setRole('SELLER')}>
+                <span style={{fontSize: '1.5rem'}}>🏪</span>
+                <span style={{fontFamily: 'Montserrat, sans-serif', color: role === 'SELLER' ? '#C9A84C' : '#444', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px'}}>SOTUVCHI</span>
+                <span style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.65rem', fontWeight: '300'}}>Mahsulot sotish</span>
               </button>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{width: '100%', background: 'linear-gradient(135deg, #D4AF37, #FFD700)', color: '#000', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '1rem', fontWeight: '800', cursor: 'pointer'}}
-          >
-            {loading ? 'Ro\'yxatdan o\'tilmoqda...' : 'Ro\'yxatdan o\'tish'}
-          </button>
-        </form>
+          {error && (
+            <div style={{border: '1px solid #3a1a1a', background: 'rgba(255,68,68,0.05)', padding: '14px 18px', marginBottom: '24px', fontFamily: 'Montserrat, sans-serif', color: '#ff6666', fontSize: '0.8rem'}}>
+              {error}
+            </div>
+          )}
 
-        <p style={{color: '#666', textAlign: 'center', marginTop: '24px', fontSize: '0.9rem'}}>
-          Hisobingiz bormi? <a href="/login" style={{color: '#D4AF37', textDecoration: 'none'}}>Kiring</a>
-        </p>
+          <form onSubmit={handleRegister}>
+            <div style={{marginBottom: '32px'}}>
+              <label style={{fontFamily: 'Montserrat, sans-serif', color: focused === 'phone' ? '#C9A84C' : '#333', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '8px', transition: 'color 0.3s'}}>
+                Telefon Raqam
+              </label>
+              <input
+                className="input-field"
+                type="text"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                onFocus={() => setFocused('phone')}
+                onBlur={() => setFocused('')}
+                placeholder="+998 90 123 45 67"
+              />
+            </div>
+
+            <div>
+              <label style={{fontFamily: 'Montserrat, sans-serif', color: focused === 'password' ? '#C9A84C' : '#333', fontSize: '0.65rem', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '8px', transition: 'color 0.3s'}}>
+                Parol
+              </label>
+              <input
+                className="input-field"
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                onFocus={() => setFocused('password')}
+                onBlur={() => setFocused('')}
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button type="submit" className="register-btn" disabled={loading}>
+              {loading ? "Ro'yxatdan o'tilmoqda..." : "Ro'yxatdan O'tish"}
+            </button>
+          </form>
+
+          <p style={{fontFamily: 'Montserrat, sans-serif', color: '#333', fontSize: '0.75rem', textAlign: 'center', marginTop: '32px', letterSpacing: '0.5px'}}>
+            Hisobingiz bormi?{' '}
+            <a href="/login" style={{color: '#C9A84C', textDecoration: 'none'}}>Kiring</a>
+          </p>
+
+          <div style={{marginTop: '60px', paddingTop: '32px', borderTop: '1px solid #111', display: 'flex', justifyContent: 'center', gap: '32px'}}>
+            {['Click', 'Payme', 'UzCard', 'Humo'].map((brand, i) => (
+              <span key={i} style={{fontFamily: 'Montserrat, sans-serif', color: '#222', fontSize: '0.7rem', letterSpacing: '1px', fontWeight: '500'}}>{brand}</span>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   )
