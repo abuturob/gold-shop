@@ -6,6 +6,43 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
   const [scrolled, setScrolled] = useState(false)
+  const [buying, setBuying] = useState(null)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user')
+    if (userData) setUser(JSON.parse(userData))
+  }, [])
+
+  const handleBuy = async (product) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+    // confirm olib tashlandi
+    setBuying(product.id)
+    try {
+      const res = await fetch('http://localhost:5000/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId: product.id })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        alert('✅ Xarid muvaffaqiyatli! Tranzaksiya ID: ' + data.transaction.txHash.slice(0, 16) + '...')
+        setProducts(products.filter(p => p.id !== product.id))
+      } else {
+        alert(data.error || 'Xato yuz berdi')
+      }
+    } catch (e) {
+      alert('Server bilan ulanishda xato')
+    }
+    setBuying(null)
+  }
 
   useEffect(() => {
     fetch('http://localhost:5000/api/products')
@@ -207,7 +244,19 @@ export default function Products() {
                       </div>
                     </div>
 
-                    <button className="buy-btn">Xarid Qilish</button>
+                    <button 
+  className="buy-btn" 
+  onClick={(e) => { e.stopPropagation(); handleBuy(product); }}
+  disabled={buying === product.id}
+  style={{
+    opacity: buying === product.id ? 0.6 : 1,
+    position: 'relative',
+    zIndex: 10,
+    pointerEvents: 'all'
+  }}
+>
+  {buying === product.id ? 'Xarid qilinmoqda...' : 'Xarid Qilish'}
+</button>
                   </div>
                 </div>
               ))}

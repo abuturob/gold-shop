@@ -9,6 +9,7 @@ dotenv.config({ path: path.join(__dirname, '.env') })
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/products')
 const sellerRoutes = require('./routes/sellers')
+const transactionRoutes = require('./routes/transactions')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -19,6 +20,7 @@ app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/sellers', sellerRoutes)
+app.use('/api/transactions', transactionRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'Gold Shop API ishlayapti!', version: '1.0.0' })
