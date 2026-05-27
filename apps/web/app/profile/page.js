@@ -261,7 +261,4 @@ export default function Profile() {
       </footer>
     </main>
   )
-}cd D:\gold-shop
-git add .
-git commit -m "xaridor kabineti - profile sahifasi qo'shildi"
-git push origin main
+}

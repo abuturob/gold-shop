@@ -1,13 +1,14 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Navbar from '../../components/Navbar'
 
 export default function Products() {
   const router = useRouter()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
-  const [scrolled, setScrolled] = useState(false)
+   
   const [buying, setBuying] = useState(null)
 
   useEffect(() => {
@@ -64,32 +65,7 @@ export default function Products() {
         .buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
 
-      {/* NAV */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        padding: '0 60px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled ? 'rgba(8,8,8,0.95)' : 'rgba(8,8,8,0.8)',
-        borderBottom: '1px solid #111', backdropFilter: 'blur(20px)', transition: 'all 0.4s'
-      }}>
-        <a href="/" style={{textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px'}}>
-          <img src="/logo.png" style={{width: '44px', height: '44px', objectFit: 'contain'}} alt="logo" />
-          <div>
-            <div style={{fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1.1rem', fontWeight: '600', letterSpacing: '4px'}}>GOLD SHOP</div>
-            <div style={{fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.55rem', letterSpacing: '3px'}}>PREMIUM MARKETPLACE</div>
-          </div>
-        </a>
-        <div style={{display: 'flex', gap: '48px', alignItems: 'center'}}>
-          <a href="/products" className="nav-link active">Mahsulotlar</a>
-          <a href="/sellers" className="nav-link">Sotuvchilar</a>
-          <a href="/login" className="nav-link">Kirish</a>
-          <a href="/register" style={{
-            background: 'linear-gradient(135deg, #A07830, #C9A84C)', color: '#000', padding: '10px 28px',
-            fontFamily: 'Montserrat, sans-serif', fontSize: '0.7rem', fontWeight: '700',
-            letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none'
-          }}>Boshlash</a>
-        </div>
-      </nav>
+      <Navbar active="products" />
 
       {/* HERO */}
       <section style={{paddingTop: '160px', paddingBottom: '80px', paddingLeft: '60px', paddingRight: '60px', borderBottom: '1px solid #111', position: 'relative', overflow: 'hidden'}}>
