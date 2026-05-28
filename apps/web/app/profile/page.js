@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Navbar from '../../components/Navbar'
 
 export default function Profile() {
   const router = useRouter()
@@ -56,34 +57,7 @@ export default function Profile() {
         tr:hover td { background: rgba(201,168,76,0.02); }
       `}</style>
 
-      {/* NAV */}
-      <nav style={{
-        background: 'rgba(8,8,8,0.98)', borderBottom: '1px solid #111',
-        padding: '0 60px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 100, backdropFilter: 'blur(20px)'
-      }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <img src="/logo.png" style={{ width: '44px', height: '44px', objectFit: 'contain' }} alt="logo" />
-          <div>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1.1rem', fontWeight: '600', letterSpacing: '4px' }}>GOLD SHOP</div>
-            <div style={{ fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.55rem', letterSpacing: '3px' }}>XARIDOR KABINETI</div>
-          </div>
-        </a>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'Montserrat, sans-serif', color: '#444', fontSize: '0.75rem' }}>{user?.phone}</span>
-          <button onClick={() => router.push('/products')} style={{
-            background: 'linear-gradient(135deg, #A07830, #C9A84C)', color: '#000',
-            border: 'none', padding: '10px 24px', cursor: 'pointer',
-            fontFamily: 'Montserrat, sans-serif', fontSize: '0.7rem', fontWeight: '700', letterSpacing: '2px'
-          }}>Xarid qilish</button>
-          <button onClick={() => { localStorage.clear(); router.push('/') }} style={{
-            background: 'none', border: '1px solid #1a1a1a', color: '#444',
-            padding: '8px 20px', cursor: 'pointer',
-            fontFamily: 'Montserrat, sans-serif', fontSize: '0.7rem', letterSpacing: '1px'
-          }}>Chiqish</button>
-        </div>
-      </nav>
+      <Navbar active="profile" />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px' }}>
 

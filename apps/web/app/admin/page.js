@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react'
+import Navbar from '../../components/Navbar'
 
 export default function Admin() {
   const [sellers, setSellers] = useState([])
@@ -99,40 +100,7 @@ export default function Admin() {
         tr:hover td { background: rgba(201,168,76,0.02); }
       `}</style>
 
-      {/* NAV */}
-      <nav style={{
-        background: 'rgba(8,8,8,0.98)',
-        borderBottom: '1px solid #111',
-        padding: '0 60px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 100,
-        backdropFilter: 'blur(20px)'
-      }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <img src="/logo.png" style={{ width: '150px', height: '44px', objectFit: 'contain' }} alt="logo" />
-          <div>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1.1rem', fontWeight: '600', letterSpacing: '4px' }}>GOLD SHOP</div>
-            <div style={{ fontFamily: 'Montserrat, sans-serif', color: '#57630a', fontSize: '0.55rem', letterSpacing: '3px' }}>ADMIN PANEL</div>
-          </div>
-        </a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
-            <span style={{ fontFamily: 'Montserrat, sans-serif', color: '#444', fontSize: '0.7rem', letterSpacing: '1px' }}>Tizim faol</span>
-          </div>
-          <button
-            onClick={() => { localStorage.clear(); window.location.href = '/' }}
-            style={{
-              background: 'none', border: '1px solid #2a1a1a', color: '#666',
-              padding: '8px 20px', cursor: 'pointer',
-              fontFamily: 'Montserrat, sans-serif', fontSize: '0.7rem',
-              letterSpacing: '1px', transition: 'all 0.3s'
-            }}
-          >
-            Chiqish
-          </button>
-        </div>
-      </nav>
+      <Navbar active="admin" />
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 60px' }}>
 

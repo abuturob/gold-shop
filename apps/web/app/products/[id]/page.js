@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import Navbar from '../../../components/Navbar'
 
 export default function ProductDetail() {
   const router = useRouter()
@@ -74,25 +75,7 @@ export default function ProductDetail() {
         .back-btn:hover { border-color: #C9A84C; color: #C9A84C; }
       `}</style>
 
-      {/* NAV */}
-      <nav style={{
-        background: scrolled ? 'rgba(8,8,8,0.98)' : 'rgba(8,8,8,0.8)',
-        borderBottom: '1px solid #111', padding: '0 60px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 100, backdropFilter: 'blur(20px)',
-        transition: 'all 0.4s'
-      }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <img src="/logo.png" style={{ width: '44px', height: '44px', objectFit: 'contain' }} alt="logo" />
-          <div>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', color: '#F5F0E8', fontSize: '1.1rem', fontWeight: '600', letterSpacing: '4px' }}>GOLD SHOP</div>
-            <div style={{ fontFamily: 'Montserrat, sans-serif', color: '#C9A84C', fontSize: '0.55rem', letterSpacing: '3px' }}>PREMIUM MARKETPLACE</div>
-          </div>
-        </a>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <button className="back-btn" onClick={() => router.push('/products')}>← Katalog</button>
-        </div>
-      </nav>
+      <Navbar active="products" />
 
       {loading ? (
         <div style={{ padding: '120px', textAlign: 'center' }}>
